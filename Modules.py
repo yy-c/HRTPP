@@ -402,7 +402,6 @@ class RuleBasedTPP(nn.Module):
         - target_name (str): The name of the target variable for evaluation.
         Returns:
         - nll_k (Tensor): The negative log-likelihood for the target variable.
-        - mae (Tensor): The mean absolute error of the predicted intervals.
         - rmse (Tensor): The root mean square error of the predicted intervals.
         """
         target_id = self.var_name_dict[target_name]
@@ -432,7 +431,7 @@ class RuleBasedTPP(nn.Module):
         mae = torch.mean(torch.abs(interval_diffs)) # Mean Absolute Error
         mse = torch.mean(torch.square(interval_diffs))
         rmse = mse.sqrt() # Root Mean Square Error
-        return nll_k, mae, rmse
+        return nll_k, rmse
     
     def MC_next_event(self, prev_times, event_times, event_types, event_meass, rule_times, rule_types, rule_meass, max_time=6.0, num_samples=2000):
         """
@@ -553,13 +552,12 @@ def eval_epoch(model, eval_dataloader, target_name, device="cpu"):
     - device (str): The device ('cpu' or 'cuda') where the computation is performed.
     Returns:
     - eval_nll (float): The average negative log-likelihood (NLL) on the evaluation dataset.
-    - eval_mae (float): The average mean absolute error (MAE) on the evaluation dataset.
     - eval_rmse (float): The average root mean square error (RMSE) on the evaluation dataset.
     """
     model.eval()
     eval_size = sum(len(events) for events, _ in eval_dataloader)
     with torch.no_grad():
-        eval_nll, eval_mae, eval_rmse = 0.0, 0.0, 0.0
+        eval_nll, eval_rmse = 0.0, 0.0
         for events_batch, rule_events_batch in eval_dataloader:
             for events, rule_events in zip(events_batch, rule_events_batch):
                 event_times, event_types, event_meass = zip(*events)
@@ -575,11 +573,10 @@ def eval_epoch(model, eval_dataloader, target_name, device="cpu"):
                     rule_times = torch.tensor(rule_times, dtype=torch.float32, device=device)
                     rule_types = torch.tensor(rule_types, dtype=torch.long, device=device)
                     rule_meass = torch.tensor(rule_meass, dtype=torch.float32, device=device)
-                nll, mae, rmse = model.evaluate(event_times, event_types, event_meass, rule_times, rule_types, rule_meass, target_name)
+                nll, rmse = model.evaluate(event_times, event_types, event_meass, rule_times, rule_types, rule_meass, target_name)
                 eval_nll += nll.item() / eval_size
-                eval_mae += mae.item() / eval_size
                 eval_rmse += rmse.item() / eval_size
-    return eval_nll, eval_mae, eval_rmse
+    return eval_nll, eval_rmse
 
 
 def train_model(model, data, rule_event_data, target_name, device="cpu", num_epochs=100, lr=0.01, patience=5, if_print=False):
@@ -602,12 +599,12 @@ def train_model(model, data, rule_event_data, target_name, device="cpu", num_epo
     output_list = []
     for epoch in range(num_epochs):
         total_loss = train_epoch(model, optimizer, train_dataloader, device)
-        eval_nll, eval_mae, eval_rmse = eval_epoch(model, test_dataloader, target_name, device)
+        eval_nll, eval_rmse = eval_epoch(model, test_dataloader, target_name, device)
         eval_loss = total_loss
-        output_list.append([total_loss, eval_nll, eval_mae, eval_rmse])
+        output_list.append([total_loss, eval_nll, eval_rmse])
         if if_print:
             print(f'Epoch {epoch}, Loss: {total_loss}')
-            print(f'Eval NLL: {eval_nll}, Eval MAE: {eval_mae}, Eval RMSE: {eval_rmse}',)
+            print(f'Eval NLL: {eval_nll}, Eval RMSE: {eval_rmse}',)
         # Early stopping check
         if eval_loss < best_eval_loss:
             best_eval_loss = eval_loss
