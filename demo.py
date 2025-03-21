@@ -33,7 +33,7 @@ model.to(device)
 loss, output = train_model(model, data, rule_set.rule_event_data, target_name, device, num_epochs, lr, patience, if_print=False)
 print("Saving results to file...")
 os.makedirs('results', exist_ok=True)
-with open(f'results/{data_name}.txt', 'w') as f:
+with open(f'results/results_{data_name}.txt', 'w') as f:
     count = 0
     for rule_name in model.rule_name_dict:
         weight = round(torch.exp(model.rule_weights[model.rule_name_dict[rule_name]]).item(), 4)
