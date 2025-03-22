@@ -17,6 +17,9 @@ Hybrid-Rule Temporal Point Processes (HRTPP) is a novel framework that integrate
   - Case studies validate HRTPP’s ability to explain disease progression.
 
 ## Installation
+Python 3.11. (recommended)
+PyTorch version 2.1.0.
+
 Download the repository (for double-blind reviewing).
 ```bash
 # Clone the repository
