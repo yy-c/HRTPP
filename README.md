@@ -48,7 +48,7 @@ If you use HRTPP in your research, please cite:
 ```
 
 ## License
-This project is licensed under the License - see the [LICENSE] file for details.
+This project is licensed under the Apache-2.0 License - see the [LICENSE] file for details.
 
 ## Contact
 For questions or collaborations, please contact [Anonymous.email@example.com].
