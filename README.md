@@ -18,6 +18,7 @@ Hybrid-Rule Temporal Point Processes (HRTPP) is a novel framework that integrate
 
 ## Installation
 Python 3.11. (recommended)
+
 PyTorch version 2.1.0.
 
 Download the repository (for double-blind reviewing).
@@ -31,13 +32,23 @@ pip install -r requirements.txt
 ```
 
 ## Usage
+Train the model using the dataset located in `data/[data_name].csv` and store the results in `results/results_[data_name].txt`.
+
 ```bash
 python demo.py
 ```
 
 ## Datasets
+The dataset used in this project is stored in CSV format, with each row representing a recorded event. It consists of four columns:
 
-HRTPP has been evaluated on real-world medical datasets, demonstrating superior predictive performance and clinical interpretability compared to state-of-the-art interpretable TPPs.
+- **`id`**: A unique identifier for each sample.
+- **`t`**: The timestamp indicating when the event occurred.
+- **`v`**: The observed value of the variable. If a variable has no observed value, its value is set to `1` by default.
+- **`k`**: The name of the variable associated with the event.
+
+Each sample (identified by `id`) may contain multiple events with different timestamps (`t`) and variables (`k`). The dataset is structured to support temporal modeling and analysis of event sequences.
+
+HRTPP has been evaluated on real-world medical datasets, demonstrating superior predictive performance and clinical interpretability.
 
 ## Citation
 If you use HRTPP in your research, please cite:
