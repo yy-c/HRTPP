@@ -587,11 +587,15 @@ def train_model(model, data, rule_event_data, target_name, device="cpu", num_epo
     best_eval_loss = float('inf')
     patience_counter = 0
     # Training processes
+    indices = list(range(len(data)))
+    random.shuffle(indices)
     train_size = int(train_prop * len(data))
-    test_size = len(data) - train_size
-    train_size1 = int(0.25 * train_size)
-    train_data, test_data = data[:train_size1], data[train_size:]
-    train_rule_event_data, test_rule_event_data = rule_event_data[:train_size1], rule_event_data[train_size:]
+    train_indices = indices[:train_size]
+    test_indices = indices[train_size:]
+    train_data = [data[i] for i in train_indices]
+    test_data = [data[i] for i in test_indices]
+    train_rule_event_data = [rule_event_data[i] for i in train_indices]
+    test_rule_event_data = [rule_event_data[i] for i in test_indices]
     train_dataset = EventDataset(train_data, train_rule_event_data)
     test_dataset = EventDataset(test_data, test_rule_event_data)
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, collate_fn=collate_fn)
