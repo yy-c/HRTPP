@@ -21,7 +21,6 @@ Python 3.11. (recommended)
 
 PyTorch version 2.1.0.
 
-Download the repository (for double-blind reviewing).
 ```bash
 # Clone the repository
 # git clone https://github.com/anonymized/HRTPP.git
