@@ -53,10 +53,10 @@ HRTPP has been evaluated on real-world medical datasets, demonstrating superior 
 ## Citation
 If you use HRTPP in your research, please cite:
 ```
-@article{HRTPP2025,
-  author    = {Anonymous author},
+@inproceedings{HRTPP2025,
+  author    = {Cao, Yunyang and Lin, Juekai and Wang, Hongye and Li, Wenhao and Jin, Bo},
   title     = {Interpretable Hybrid-Rule Temporal Point Processes},
-  journal   = {ECML-PKDD},
+  booktitle = {Joint European Conference on Machine Learning and Knowledge Discovery in Databases},
   year      = {2025}
 }
 ```
