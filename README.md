@@ -23,7 +23,7 @@ PyTorch version 2.1.0.
 
 ```bash
 # Clone the repository
-# git clone https://github.com/anonymized/HRTPP.git
+git clone https://github.com/yy-c/HRTPP.git
 cd HRTPP
 
 # Install dependencies
