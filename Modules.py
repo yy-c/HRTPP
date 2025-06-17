@@ -451,34 +451,33 @@ class RuleBasedTPP(nn.Module):
         - torch.Tensor: The average predicted time of the next event.
         """
         next_times = []
-        for _ in range(num_samples):
-            t_current = prev_times.clone()
-            max_iterations = 100
-            iteration = 0
-            while iteration < max_iterations:
-                current_intensity = self.intensity(given_times=torch.tensor([t_current], dtype=torch.float32, device=self.device),
-                                                   event_times=event_times, event_types=event_types, event_meass=event_meass, 
-                                                   rule_times=rule_times, rule_types=rule_types, rule_meass=rule_meass)
-                u = torch.rand(1, dtype=torch.float32, device=self.device)
-                tau_candidate = -torch.log(u) / current_intensity
-                t_candidate = t_current + tau_candidate
-                if t_candidate-prev_times > max_time:
-                    next_times.append(torch.inf)
-                    break
-                candidate_intensity = self.intensity(given_times=torch.tensor([t_candidate], dtype=torch.float32, device=self.device),
-                                                     event_times=event_times, event_types=event_types, event_meass=event_meass, 
-                                                     rule_times=rule_times, rule_types=rule_types, rule_meass=rule_meass)
-                if torch.rand(1, dtype=torch.float32, device=self.device) < (candidate_intensity / current_intensity):
-                    next_times.append(t_candidate - prev_times)
-                    break
-                else:
-                    t_current = t_candidate
-                iteration += 1
-            valid_samples = torch.tensor([t for t in next_times if t < torch.inf])
-            # print(torch.mean(valid_samples) if len(valid_samples)!=0 else max_time)
-            if len(valid_samples) == 0:
-                return torch.tensor(max_time, dtype=torch.float32, device=self.device)
-            return torch.mean(valid_samples)
+        t_current = prev_times.clone()
+        max_iterations = num_samples
+        iteration = 0
+        while iteration < max_iterations:
+            current_intensity = self.intensity(given_times=torch.tensor([t_current], dtype=torch.float32, device=self.device),
+                                               event_times=event_times, event_types=event_types, event_meass=event_meass, 
+                                               rule_times=rule_times, rule_types=rule_types, rule_meass=rule_meass)
+            u = torch.rand(1, dtype=torch.float32, device=self.device)
+            tau_candidate = -torch.log(u) / current_intensity
+            t_candidate = t_current + tau_candidate
+            if t_candidate-prev_times > max_time:
+                next_times.append(torch.inf)
+                break
+            candidate_intensity = self.intensity(given_times=torch.tensor([t_candidate], dtype=torch.float32, device=self.device),
+                                                 event_times=event_times, event_types=event_types, event_meass=event_meass, 
+                                                 rule_times=rule_times, rule_types=rule_types, rule_meass=rule_meass)
+            if torch.rand(1, dtype=torch.float32, device=self.device) < (candidate_intensity / current_intensity):
+                next_times.append(t_candidate - prev_times)
+                break
+            else:
+                t_current = t_candidate
+            iteration += 1
+        valid_samples = torch.tensor([t for t in next_times if t < torch.inf])
+        # print(torch.mean(valid_samples) if len(valid_samples)!=0 else max_time)
+        if len(valid_samples) == 0:
+            return torch.tensor(max_time, dtype=torch.float32, device=self.device)
+        return torch.mean(valid_samples)
 
 # Custom Dataset
 class EventDataset(Dataset):
